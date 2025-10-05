@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - {{ bank.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card fade-in">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 class="display-6 fw-bold text-primary">
+                            <i class="fas fa-university me-3"></i>{{ bank.name }} Dashboard
+                        </h1>
+                        <p class="text-muted">Welcome back, {{ user.full_name }}!</p>
+                    </div>
+                    <div class="text-end">
+                        <div class="stats-card">
+                            <div class="stats-number">{{ user.credit_score }}</div>
+                            <div>Credit Score</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Stats -->
+                <div class="row g-4 mb-5">
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <i class="fas fa-rupee-sign fa-2x mb-2"></i>
+                            <div class="stats-number">₹{{ "%.0f"|format(user.monthly_income) }}</div>
+                            <div>Monthly Income</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <i class="fas fa-briefcase fa-2x mb-2"></i>
+                            <div class="stats-number">{{ user.employment_tenure_years }}</div>
+                            <div>Years Experience</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <i class="fas fa-file-alt fa-2x mb-2"></i>
+                            <div class="stats-number">{{ applications|length }}</div>
+                            <div>Applications</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <i class="fas fa-percentage fa-2x mb-2"></i>
+                            <div class="stats-number">{{ bank.interest_rate }}%</div>
+                            <div>Starting Rate</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Options -->
+                <div class="row g-4 mb-5">
+                    <div class="col-md-6">
+                        <div class="card h-100 bank-card" onclick="location.href='{{ url_for('loan_application') }}'">
+                            <div class="card-body text-center p-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-file-alt fa-3x text-primary"></i>
+                                </div>
+                                <h3 class="card-title text-primary">Apply for Loan</h3>
+                                <p class="card-text text-muted">
+                                    Start your loan application process with our guided questionnaire.
+                                </p>
+                                <div class="mt-3">
+                                    <span class="badge bg-primary fs-6 px-3 py-2">
+                                        <i class="fas fa-arrow-right me-2"></i>Apply Now
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card h-100 bank-card" onclick="getGeminiSuggestions()">
+                            <div class="card-body text-center p-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-robot fa-3x text-success"></i>
+                                </div>
+                                <h3 class="card-title text-success">AI Loan Suggestions</h3>
+                                <p class="card-text text-muted">
+                                    Get personalized loan recommendations powered by AI.
+                                </p>
+                                <div class="mt-3">
+                                    <span class="badge bg-success fs-6 px-3 py-2">
+                                        <i class="fas fa-arrow-right me-2"></i>Get Suggestions
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Options -->
+                <div class="row g-4 mb-5">
+                    <div class="col-md-6">
+                        <div class="card h-100 bank-card" onclick="viewLoanProducts()">
+                            <div class="card-body text-center p-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-list fa-3x text-warning"></i>
+                                </div>
+                                <h3 class="card-title text-warning">View Loan Products</h3>
+                                <p class="card-text text-muted">
+                                    Browse all available loan products and their details.
+                                </p>
+                                <div class="mt-3">
+                                    <span class="badge bg-warning fs-6 px-3 py-2">
+                                        <i class="fas fa-arrow-right me-2"></i>View Products
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card h-100 bank-card" onclick="updateProfile()">
+                            <div class="card-body text-center p-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-user-edit fa-3x text-info"></i>
+                                </div>
+                                <h3 class="card-title text-info">Update Profile</h3>
+                                <p class="card-text text-muted">
+                                    View and modify your personal and financial details.
+                                </p>
+                                <div class="mt-3">
+                                    <span class="badge bg-info fs-6 px-3 py-2">
+                                        <i class="fas fa-arrow-right me-2"></i>Update Profile
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Applications -->
+                {% if applications %}
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-history me-2"></i>Recent Applications
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Loan Type</th>
+                                        <th>Amount</th>
+                                        <th>Tenure</th>
+                                        <th>Status</th>
+                                        <th>Applied Date</th>
+                                        <th>Probability</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for app in applications %}
+                                    <tr>
+                                        <td class="fw-bold">{{ app.loan_type.title() }} Loan</td>
+                                        <td>₹{{ "%.0f"|format(app.amount_requested) }}</td>
+                                        <td>{{ app.tenure_years }} years</td>
+                                        <td>
+                                            {% if app.status == 'pending' %}
+                                                <span class="badge bg-warning">Pending</span>
+                                            {% elif app.status == 'approved' %}
+                                                <span class="badge bg-success">Approved</span>
+                                            {% elif app.status == 'rejected' %}
+                                                <span class="badge bg-danger">Rejected</span>
+                                            {% else %}
+                                                <span class="badge bg-info">{{ app.status.title() }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ app.created_at.strftime('%d %b %Y') }}</td>
+                                        <td>
+                                            {% if app.approval_probability %}
+                                                <div class="progress" style="width: 100px; height: 20px;">
+                                                    <div class="progress-bar" role="progressbar" 
+                                                         style="width: {{ app.approval_probability }}%"
+                                                         aria-valuenow="{{ app.approval_probability }}" 
+                                                         aria-valuemin="0" aria-valuemax="100">
+                                                        {{ app.approval_probability }}%
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Gemini Suggestions Modal -->
+<div class="modal fade" id="geminiModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-robot me-2"></i>AI Loan Suggestions
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="geminiContent">
+                    <div class="text-center">
+                        <div class="loading"></div>
+                        <p>Getting personalized suggestions...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function getGeminiSuggestions() {
+        $('#geminiModal').modal('show');
+        
+        // Show loading state
+        $('#geminiContent').html(`
+            <div class="text-center">
+                <div class="loading"></div>
+                <p>Getting personalized suggestions...</p>
+            </div>
+        `);
+        
+        // Fetch suggestions
+        fetch('/gemini_suggestions')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    displaySuggestions(data);
+                } else {
+                    displayError(data.message);
+                }
+            })
+            .catch(error => {
+                displayError('Failed to fetch suggestions. Please try again.');
+            });
+    }
+    
+    function displaySuggestions(data) {
+        let html = `
+            <div class="mb-3">
+                <h6 class="text-primary">Your Profile Analysis:</h6>
+                <p class="text-muted">${data.user_profile.risk_profile.replace('_', ' ').toUpperCase()} Risk Profile</p>
+            </div>
+        `;
+        
+        if (data.suggestions && data.suggestions.length > 0) {
+            html += '<h6 class="text-primary mb-3">Recommended Loans:</h6>';
+            data.suggestions.forEach(suggestion => {
+                html += `
+                    <div class="suggestion-card card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="card-title">${suggestion.loan_type.charAt(0).toUpperCase() + suggestion.loan_type.slice(1)} Loan - ${suggestion.bank_name}</h6>
+                                    <p class="text-muted small">${suggestion.personalized_reason}</p>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <small class="text-muted">Interest Rate:</small><br>
+                                            <span class="fw-bold text-success">${suggestion.interest_rate}%</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted">Amount Range:</small><br>
+                                            <span class="fw-bold">${suggestion.amount_range}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-success">${suggestion.eligibility_score.toUpperCase()}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        if (data.gemini_insights) {
+            html += `
+                <div class="mt-4">
+                    <h6 class="text-primary">AI Insights:</h6>
+                    <div class="alert alert-info">
+                        ${data.gemini_insights}
+                    </div>
+                </div>
+            `;
+        }
+        
+        $('#geminiContent').html(html);
+    }
+    
+    function displayError(message) {
+        $('#geminiContent').html(`
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>${message}
+            </div>
+        `);
+    }
+    
+    function viewLoanProducts() {
+        window.location.href = '{{ url_for("loan_products") }}';
+    }
+    
+    function updateProfile() {
+        window.location.href = '{{ url_for("update_profile") }}';
+    }
+</script>
+{% endblock %}

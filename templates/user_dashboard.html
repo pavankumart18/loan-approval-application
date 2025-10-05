@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Choose Your Bank - Stark Bank{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card fade-in">
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <h1 class="display-5 fw-bold text-primary">
+                        <i class="fas fa-university me-3"></i>Choose Your Bank
+                    </h1>
+                    <p class="lead text-muted">Compare rates and find the best loan offers</p>
+                </div>
+
+                <div class="row g-4">
+                    {% for bank in banks %}
+                    <div class="col-lg-6 col-xl-4">
+                        <div class="card h-100 bank-card" onclick="location.href='{{ url_for('bank_selection', bank_id=bank.id) }}'">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h4 class="card-title text-primary">{{ bank.name }}</h4>
+                                        <p class="text-muted small">{{ bank.description }}</p>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="interest-rate">{{ bank.interest_rate }}%</div>
+                                        <small class="text-muted">Starting Rate</small>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-muted">Best Loan Type:</span>
+                                        <span class="fw-bold loan-type">{{ bank.best_loan_type }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-muted">Best Tenure:</span>
+                                        <span class="fw-bold">{{ bank.best_tenure }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid">
+                                    <button class="btn btn-primary">
+                                        <i class="fas fa-arrow-right me-2"></i>Select Bank
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Comparison Section -->
+                <div class="mt-5">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">
+                                <i class="fas fa-chart-bar me-2"></i>Quick Comparison
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Bank</th>
+                                            <th>Interest Rate</th>
+                                            <th>Best Loan Type</th>
+                                            <th>Best Tenure</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for bank in banks %}
+                                        <tr>
+                                            <td class="fw-bold">{{ bank.name }}</td>
+                                            <td><span class="badge bg-success fs-6">{{ bank.interest_rate }}%</span></td>
+                                            <td>{{ bank.best_loan_type }}</td>
+                                            <td>{{ bank.best_tenure }}</td>
+                                            <td>
+                                                <a href="{{ url_for('bank_selection', bank_id=bank.id) }}" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    Select
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features Section -->
+                <div class="mt-5">
+                    <div class="row g-4">
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="stats-card">
+                                    <i class="fas fa-clock fa-2x mb-2"></i>
+                                    <div class="stats-number">24</div>
+                                    <div>Hours Approval</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="stats-card">
+                                    <i class="fas fa-percentage fa-2x mb-2"></i>
+                                    <div class="stats-number">6.5%</div>
+                                    <div>Lowest Rate</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="stats-card">
+                                    <i class="fas fa-users fa-2x mb-2"></i>
+                                    <div class="stats-number">10K+</div>
+                                    <div>Happy Customers</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="stats-card">
+                                    <i class="fas fa-shield-alt fa-2x mb-2"></i>
+                                    <div class="stats-number">100%</div>
+                                    <div>Secure</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add search functionality
+    function filterBanks() {
+        const searchTerm = document.getElementById('bankSearch').value.toLowerCase();
+        const bankCards = document.querySelectorAll('.bank-card');
+        
+        bankCards.forEach(card => {
+            const bankName = card.querySelector('.card-title').textContent.toLowerCase();
+            const bankDescription = card.querySelector('.text-muted').textContent.toLowerCase();
+            
+            if (bankName.includes(searchTerm) || bankDescription.includes(searchTerm)) {
+                card.parentElement.style.display = 'block';
+            } else {
+                card.parentElement.style.display = 'none';
+            }
+        });
+    }
+
+    // Add sorting functionality
+    function sortBanks(criteria) {
+        const container = document.querySelector('.row.g-4');
+        const cards = Array.from(container.children);
+        
+        cards.sort((a, b) => {
+            if (criteria === 'rate') {
+                const rateA = parseFloat(a.querySelector('.interest-rate').textContent);
+                const rateB = parseFloat(b.querySelector('.interest-rate').textContent);
+                return rateA - rateB;
+            } else if (criteria === 'name') {
+                const nameA = a.querySelector('.card-title').textContent;
+                const nameB = b.querySelector('.card-title').textContent;
+                return nameA.localeCompare(nameB);
+            }
+        });
+        
+        cards.forEach(card => container.appendChild(card));
+    }
+</script>
+{% endblock %}

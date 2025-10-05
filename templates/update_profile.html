@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Update Profile - {{ bank.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card fade-in">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <h1 class="display-6 fw-bold text-primary">
+                        <i class="fas fa-user-edit me-3"></i>Update Your Profile
+                    </h1>
+                    <p class="lead text-muted">Keep your information up to date for better loan approvals</p>
+                </div>
+
+                <form method="POST">
+                    <!-- Personal Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-user me-2"></i>Personal Information
+                            </h5>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="full_name" class="form-label">Full Name *</label>
+                            <input type="text" class="form-control" id="full_name" name="full_name" 
+                                   value="{{ user.full_name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label">Phone Number *</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" 
+                                   value="{{ user.phone }}" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="address" class="form-label">Address *</label>
+                        <textarea class="form-control" id="address" name="address" rows="3" required>{{ user.address }}</textarea>
+                    </div>
+
+                    <!-- Financial Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-rupee-sign me-2"></i>Financial Information
+                            </h5>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="monthly_income" class="form-label">Monthly Income (₹) *</label>
+                            <input type="number" class="form-control" id="monthly_income" name="monthly_income" 
+                                   min="0" step="1000" value="{{ user.monthly_income }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="employment_type" class="form-label">Employment Type *</label>
+                            <select class="form-control" id="employment_type" name="employment_type" required>
+                                <option value="salaried" {% if user.employment_type == 'salaried' %}selected{% endif %}>Salaried</option>
+                                <option value="self-employed" {% if user.employment_type == 'self-employed' %}selected{% endif %}>Self-Employed</option>
+                                <option value="business" {% if user.employment_type == 'business' %}selected{% endif %}>Business Owner</option>
+                                <option value="student" {% if user.employment_type == 'student' %}selected{% endif %}>Student</option>
+                                <option value="retired" {% if user.employment_type == 'retired' %}selected{% endif %}>Retired</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="employer_name" class="form-label">Employer Name</label>
+                            <input type="text" class="form-control" id="employer_name" name="employer_name" 
+                                   value="{{ user.employer_name }}">
+                            <small class="text-muted">Leave blank if not applicable</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="employment_tenure" class="form-label">Employment Tenure (Years) *</label>
+                            <input type="number" class="form-control" id="employment_tenure" name="employment_tenure" 
+                                   min="0" step="0.5" value="{{ user.employment_tenure_years }}" required>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="credit_score" class="form-label">Credit Score *</label>
+                            <input type="number" class="form-control" id="credit_score" name="credit_score" 
+                                   min="300" max="850" value="{{ user.credit_score }}" required>
+                            <small class="text-muted">Score between 300-850</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-control" value="{{ user.email }}" disabled>
+                            <small class="text-muted">Email cannot be changed</small>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mb-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save me-2"></i>Update Profile
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center">
+                    <a href="{{ url_for('main_dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Show/hide employer name based on employment type
+    $('#employment_type').change(function() {
+        const employerField = $('#employer_name').closest('.col-md-6');
+        if ($(this).val() === 'salaried') {
+            employerField.show();
+            $('#employer_name').prop('required', true);
+        } else {
+            employerField.show();
+            $('#employer_name').prop('required', false);
+        }
+    });
+
+    // Initialize on page load
+    $(document).ready(function() {
+        $('#employment_type').trigger('change');
+    });
+
+    // Form validation
+    $('form').on('submit', function(e) {
+        const monthlyIncome = parseFloat($('#monthly_income').val());
+        const creditScore = parseInt($('#credit_score').val());
+        
+        if (monthlyIncome < 0) {
+            alert('Monthly income should be positive');
+            e.preventDefault();
+            return;
+        }
+        
+        if (creditScore < 300 || creditScore > 850) {
+            alert('Credit score should be between 300 and 850');
+            e.preventDefault();
+            return;
+        }
+    });
+</script>
+{% endblock %}

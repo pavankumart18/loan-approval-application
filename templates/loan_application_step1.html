@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Loan Application - Step 1{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card fade-in">
+            <div class="card-body p-5">
+                <!-- Progress Bar -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Step 1 of 3</span>
+                        <span class="text-muted">33% Complete</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: 33%" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+
+                <div class="text-center mb-4">
+                    <h1 class="display-6 fw-bold text-primary">
+                        <i class="fas fa-file-alt me-3"></i>Choose Your Loan Type
+                    </h1>
+                    <p class="lead text-muted">Select the type of loan that best fits your needs</p>
+                </div>
+
+                <form method="POST">
+                    <input type="hidden" name="step" value="1">
+                    
+                    <div class="row g-4">
+                        {% for loan_type, details in loan_types.items() %}
+                        <div class="col-md-6">
+                            <div class="card h-100 bank-card loan-type-card" onclick="selectLoanType('{{ loan_type }}')">
+                                <div class="card-body text-center p-4">
+                                    <div class="mb-3">
+                                        {% if loan_type == 'home' %}
+                                            <i class="fas fa-home fa-3x text-primary"></i>
+                                        {% elif loan_type == 'personal' %}
+                                            <i class="fas fa-user fa-3x text-success"></i>
+                                        {% elif loan_type == 'auto' %}
+                                            <i class="fas fa-car fa-3x text-warning"></i>
+                                        {% elif loan_type == 'business' %}
+                                            <i class="fas fa-briefcase fa-3x text-info"></i>
+                                        {% elif loan_type == 'education' %}
+                                            <i class="fas fa-graduation-cap fa-3x text-secondary"></i>
+                                        {% elif loan_type == 'medical' %}
+                                            <i class="fas fa-heartbeat fa-3x text-danger"></i>
+                                        {% endif %}
+                                    </div>
+                                    <h4 class="card-title text-primary">{{ details.name }}</h4>
+                                    
+                                    <div class="mb-3">
+                                        <div class="row g-2 text-center">
+                                            <div class="col-6">
+                                                <small class="text-muted">Amount Range</small><br>
+                                                <span class="fw-bold">₹{{ "%.0f"|format(details.min_amount/1000) }}K - ₹{{ "%.0f"|format(details.max_amount/100000) }}L</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <small class="text-muted">Interest Rate</small><br>
+                                                <span class="fw-bold text-success">{{ details.interest_range[0] }}% - {{ details.interest_range[1] }}%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="row g-2 text-center">
+                                            <div class="col-6">
+                                                <small class="text-muted">Min Tenure</small><br>
+                                                <span class="fw-bold">{{ details.min_tenure }} years</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <small class="text-muted">Max Tenure</small><br>
+                                                <span class="fw-bold">{{ details.max_tenure }} years</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-check d-flex justify-content-center">
+                                        <input class="form-check-input" type="radio" name="loan_type" id="loan_type_{{ loan_type }}" value="{{ loan_type }}">
+                                        <label class="form-check-label ms-2" for="loan_type_{{ loan_type }}">
+                                            Select This Loan
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg" id="nextBtn" disabled>
+                            <i class="fas fa-arrow-right me-2"></i>Next Step
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('main_dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function selectLoanType(loanType) {
+        // Uncheck all radio buttons
+        $('input[name="loan_type"]').prop('checked', false);
+        
+        // Check the selected one
+        $(`#loan_type_${loanType}`).prop('checked', true);
+        
+        // Remove active class from all cards
+        $('.loan-type-card').removeClass('border-primary border-3');
+        
+        // Add active class to selected card
+        $(`#loan_type_${loanType}`).closest('.loan-type-card').addClass('border-primary border-3');
+        
+        // Enable next button
+        $('#nextBtn').prop('disabled', false);
+    }
+
+    // Add click handlers to cards
+    $('.loan-type-card').click(function() {
+        const loanType = $(this).find('input[name="loan_type"]').val();
+        selectLoanType(loanType);
+    });
+
+    // Prevent radio button clicks from triggering card click twice
+    $('input[name="loan_type"]').click(function(e) {
+        e.stopPropagation();
+        selectLoanType($(this).val());
+    });
+</script>
+{% endblock %}

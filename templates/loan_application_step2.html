@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}Loan Application - Step 2{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card fade-in">
+            <div class="card-body p-5">
+                <!-- Progress Bar -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Step 2 of 3</span>
+                        <span class="text-muted">66% Complete</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: 66%" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+
+                <div class="text-center mb-4">
+                    <h1 class="display-6 fw-bold text-primary">
+                        <i class="fas fa-rupee-sign me-3"></i>Enter Loan Amount
+                    </h1>
+                    <p class="lead text-muted">How much do you need for your {{ loan_type.title() }} Loan?</p>
+                </div>
+
+                <form method="POST">
+                    <input type="hidden" name="step" value="2">
+                    
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="mb-4">
+                                        <label for="amount" class="form-label">
+                                            <i class="fas fa-rupee-sign me-2"></i>Loan Amount (₹)
+                                        </label>
+                                        <input type="number" class="form-control form-control-lg text-center" 
+                                               id="amount" name="amount" 
+                                               min="10000" max="10000000" step="10000" required>
+                                        <div class="form-text">Enter amount between ₹10,000 to ₹1,00,00,000</div>
+                                    </div>
+
+                                    <!-- Quick Amount Buttons -->
+                                    <div class="mb-4">
+                                        <label class="form-label">Quick Select:</label>
+                                        <div class="row g-2">
+                                            <div class="col-6 col-md-3">
+                                                <button type="button" class="btn btn-outline-primary w-100" onclick="setAmount(100000)">₹1L</button>
+                                            </div>
+                                            <div class="col-6 col-md-3">
+                                                <button type="button" class="btn btn-outline-primary w-100" onclick="setAmount(500000)">₹5L</button>
+                                            </div>
+                                            <div class="col-6 col-md-3">
+                                                <button type="button" class="btn btn-outline-primary w-100" onclick="setAmount(1000000)">₹10L</button>
+                                            </div>
+                                            <div class="col-6 col-md-3">
+                                                <button type="button" class="btn btn-outline-primary w-100" onclick="setAmount(2000000)">₹20L</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                                            <i class="fas fa-arrow-right me-2"></i>Continue to Tenure Selection
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Suggestions Section -->
+                <div class="mt-5">
+                    <h3 class="text-center mb-4">
+                        <i class="fas fa-lightbulb me-2 text-warning"></i>Recommended Options for {{ loan_type.title() }} Loan
+                    </h3>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="suggestion-card card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div>
+                                            <h5 class="card-title text-primary">
+                                                <i class="fas fa-star me-2"></i>Option 1 - Best Rate
+                                            </h5>
+                                            <p class="text-muted small">Lowest interest rate with excellent approval chances</p>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="interest-rate text-success">7.5%</div>
+                                            <small class="text-muted">Interest Rate</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-6">
+                                            <small class="text-muted">Amount:</small><br>
+                                            <span class="fw-bold">₹5,00,000</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted">Tenure:</small><br>
+                                            <span class="fw-bold">5 years</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-6">
+                                            <small class="text-muted">EMI:</small><br>
+                                            <span class="fw-bold text-primary">₹10,245</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted">Approval Chance:</small><br>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar bg-success" style="width: 92%">92%</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="text-center">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="selectSuggestion(500000, 5)">
+                                            <i class="fas fa-check me-1"></i>Select This Option
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="suggestion-card card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div>
+                                            <h5 class="card-title text-primary">
+                                                <i class="fas fa-star me-2"></i>Option 2 - Higher Amount
+                                            </h5>
+                                            <p class="text-muted small">Higher loan amount with competitive rates</p>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="interest-rate text-success">8.2%</div>
+                                            <small class="text-muted">Interest Rate</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-6">
+                                            <small class="text-muted">Amount:</small><br>
+                                            <span class="fw-bold">₹10,00,000</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted">Tenure:</small><br>
+                                            <span class="fw-bold">7 years</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-6">
+                                            <small class="text-muted">EMI:</small><br>
+                                            <span class="fw-bold text-primary">₹16,245</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted">Approval Chance:</small><br>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar bg-warning" style="width: 85%">85%</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="text-center">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="selectSuggestion(1000000, 7)">
+                                            <i class="fas fa-check me-1"></i>Select This Option
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('loan_application') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Loan Type
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function setAmount(amount) {
+        $('#amount').val(amount);
+        $('#amount').trigger('input');
+    }
+
+    function selectSuggestion(amount, tenure) {
+        $('#amount').val(amount);
+        $('#amount').trigger('input');
+        
+        // Store tenure for next step (you might want to use sessionStorage)
+        sessionStorage.setItem('suggestedTenure', tenure);
+    }
+
+    // Format amount as user types
+    $('#amount').on('input', function() {
+        let value = $(this).val();
+        if (value) {
+            // Add visual feedback
+            $(this).addClass('border-success');
+            setTimeout(() => {
+                $(this).removeClass('border-success');
+            }, 1000);
+        }
+    });
+
+    // Validate amount range
+    $('form').on('submit', function(e) {
+        const amount = parseFloat($('#amount').val());
+        
+        console.log('Form submitted with amount:', amount);
+        
+        if (!amount || amount < 10000) {
+            alert('Please enter a valid amount. Minimum loan amount is ₹10,000');
+            e.preventDefault();
+            return false;
+        }
+        
+        if (amount > 10000000) {
+            alert('Maximum loan amount is ₹1,00,00,000');
+            e.preventDefault();
+            return false;
+        }
+        
+        console.log('Validation passed, submitting form...');
+        
+        // Show loading state
+        $('#submitBtn').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Processing...');
+    });
+</script>
+{% endblock %}

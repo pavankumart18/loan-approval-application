@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}Loan Products - {{ bank.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card fade-in">
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <h1 class="display-6 fw-bold text-primary">
+                        <i class="fas fa-list me-3"></i>{{ bank.name }} Loan Products
+                    </h1>
+                    <p class="lead text-muted">Explore our comprehensive range of loan products</p>
+                </div>
+
+                <!-- Bank Overview -->
+                <div class="row mb-5">
+                    <div class="col-md-6">
+                        <div class="stats-card">
+                            <i class="fas fa-percentage fa-2x mb-2"></i>
+                            <div class="stats-number">{{ bank.interest_rate }}%</div>
+                            <div>Starting Interest Rate</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="stats-card">
+                            <i class="fas fa-clock fa-2x mb-2"></i>
+                            <div class="stats-number">24</div>
+                            <div>Hours Approval</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loan Products Grid -->
+                <div class="row g-4">
+                    {% for loan_type, details in loan_types.items() %}
+                    <div class="col-lg-6">
+                        <div class="card h-100 bank-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        {% if loan_type == 'home' %}
+                                            <i class="fas fa-home fa-2x text-primary mb-2"></i>
+                                        {% elif loan_type == 'personal' %}
+                                            <i class="fas fa-user fa-2x text-success mb-2"></i>
+                                        {% elif loan_type == 'auto' %}
+                                            <i class="fas fa-car fa-2x text-warning mb-2"></i>
+                                        {% elif loan_type == 'business' %}
+                                            <i class="fas fa-briefcase fa-2x text-info mb-2"></i>
+                                        {% elif loan_type == 'education' %}
+                                            <i class="fas fa-graduation-cap fa-2x text-secondary mb-2"></i>
+                                        {% elif loan_type == 'medical' %}
+                                            <i class="fas fa-heartbeat fa-2x text-danger mb-2"></i>
+                                        {% endif %}
+                                        <h4 class="card-title text-primary">{{ details.name }}</h4>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="interest-rate">{{ details.interest_range[0] }}%</div>
+                                        <small class="text-muted">Starting Rate</small>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <small class="text-muted">Amount Range</small><br>
+                                            <span class="fw-bold">₹{{ "%.0f"|format(details.min_amount/1000) }}K - ₹{{ "%.0f"|format(details.max_amount/100000) }}L</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted">Interest Rate</small><br>
+                                            <span class="fw-bold text-success">{{ details.interest_range[0] }}% - {{ details.interest_range[1] }}%</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <small class="text-muted">Min Tenure</small><br>
+                                            <span class="fw-bold">{{ details.min_tenure }} years</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted">Max Tenure</small><br>
+                                            <span class="fw-bold">{{ details.max_tenure }} years</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Features -->
+                                <div class="mb-4">
+                                    <h6 class="text-primary">Key Features:</h6>
+                                    <ul class="list-unstyled">
+                                        {% if loan_type == 'home' %}
+                                            <li><i class="fas fa-check text-success me-2"></i>Tax benefits available</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Long repayment tenure</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Property as collateral</li>
+                                        {% elif loan_type == 'personal' %}
+                                            <li><i class="fas fa-check text-success me-2"></i>No collateral required</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Quick approval</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Flexible usage</li>
+                                        {% elif loan_type == 'auto' %}
+                                            <li><i class="fas fa-check text-success me-2"></i>Vehicle as collateral</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Competitive rates</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Quick processing</li>
+                                        {% elif loan_type == 'business' %}
+                                            <li><i class="fas fa-check text-success me-2"></i>Business growth support</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Flexible repayment</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Working capital</li>
+                                        {% elif loan_type == 'education' %}
+                                            <li><i class="fas fa-check text-success me-2"></i>Education investment</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Moratorium period</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Co-signer options</li>
+                                        {% elif loan_type == 'medical' %}
+                                            <li><i class="fas fa-check text-success me-2"></i>Emergency funding</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Quick approval</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>No collateral</li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+
+                                <div class="d-grid">
+                                    <a href="{{ url_for('loan_application') }}" class="btn btn-primary">
+                                        <i class="fas fa-arrow-right me-2"></i>Apply Now
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- EMI Calculator Section -->
+                <div class="mt-5">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">
+                                <i class="fas fa-calculator me-2"></i>EMI Calculator
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="calc_amount" class="form-label">Loan Amount (₹)</label>
+                                        <input type="number" class="form-control" id="calc_amount" min="10000" step="10000" value="500000">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="calc_tenure" class="form-label">Tenure (Years)</label>
+                                        <input type="number" class="form-control" id="calc_tenure" min="1" max="30" value="5">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="calc_rate" class="form-label">Interest Rate (%)</label>
+                                        <input type="number" class="form-control" id="calc_rate" min="1" max="20" step="0.1" value="{{ bank.interest_rate }}">
+                                    </div>
+                                    <button class="btn btn-primary" onclick="calculateEMI()">
+                                        <i class="fas fa-calculator me-2"></i>Calculate EMI
+                                    </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <div id="emi_result" class="text-center" style="display: none;">
+                                        <div class="stats-card">
+                                            <div class="stats-number" id="emi_amount">₹0</div>
+                                            <div>Monthly EMI</div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <small class="text-muted">Total Interest: </small>
+                                            <span class="fw-bold" id="total_interest">₹0</span>
+                                        </div>
+                                        <div class="mt-2">
+                                            <small class="text-muted">Total Amount: </small>
+                                            <span class="fw-bold" id="total_amount">₹0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('main_dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function calculateEMI() {
+        const principal = parseFloat(document.getElementById('calc_amount').value);
+        const tenureYears = parseFloat(document.getElementById('calc_tenure').value);
+        const annualRate = parseFloat(document.getElementById('calc_rate').value);
+        
+        if (!principal || !tenureYears || !annualRate) {
+            alert('Please fill all fields');
+            return;
+        }
+        
+        const monthlyRate = annualRate / 100 / 12;
+        const months = tenureYears * 12;
+        
+        let emi;
+        if (monthlyRate === 0) {
+            emi = principal / months;
+        } else {
+            const powerFactor = Math.pow(1 + monthlyRate, months);
+            emi = principal * monthlyRate * powerFactor / (powerFactor - 1);
+        }
+        
+        const totalAmount = emi * months;
+        const totalInterest = totalAmount - principal;
+        
+        document.getElementById('emi_amount').textContent = '₹' + Math.round(emi).toLocaleString();
+        document.getElementById('total_interest').textContent = '₹' + Math.round(totalInterest).toLocaleString();
+        document.getElementById('total_amount').textContent = '₹' + Math.round(totalAmount).toLocaleString();
+        
+        document.getElementById('emi_result').style.display = 'block';
+    }
+    
+    // Calculate EMI on input change
+    document.getElementById('calc_amount').addEventListener('input', calculateEMI);
+    document.getElementById('calc_tenure').addEventListener('input', calculateEMI);
+    document.getElementById('calc_rate').addEventListener('input', calculateEMI);
+    
+    // Calculate EMI on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        calculateEMI();
+    });
+</script>
+{% endblock %}

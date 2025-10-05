@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Register - {{ bank.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card fade-in">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <i class="fas fa-user-plus fa-3x text-success mb-3"></i>
+                    <h2 class="fw-bold text-primary">Create Account with {{ bank.name }}</h2>
+                    <p class="text-muted">Fill in your details to get started with loan applications.</p>
+                </div>
+
+                <form method="POST">
+                    <!-- Personal Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-user me-2"></i>Personal Information
+                            </h5>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="full_name" class="form-label">Full Name *</label>
+                            <input type="text" class="form-control" id="full_name" name="full_name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email Address *</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label">Phone Number *</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="dob" class="form-label">Date of Birth *</label>
+                            <input type="date" class="form-control" id="dob" name="dob" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="address" class="form-label">Address *</label>
+                        <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                    </div>
+
+                    <!-- Financial Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-rupee-sign me-2"></i>Financial Information
+                            </h5>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="monthly_income" class="form-label">Monthly Income (₹) *</label>
+                            <input type="number" class="form-control" id="monthly_income" name="monthly_income" min="0" step="1000" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="employment_type" class="form-label">Employment Type *</label>
+                            <select class="form-control" id="employment_type" name="employment_type" required>
+                                <option value="">Select Type</option>
+                                <option value="salaried">Salaried</option>
+                                <option value="self-employed">Self-Employed</option>
+                                <option value="business">Business Owner</option>
+                                <option value="student">Student</option>
+                                <option value="retired">Retired</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="employer_name" class="form-label">Employer Name</label>
+                            <input type="text" class="form-control" id="employer_name" name="employer_name">
+                            <small class="text-muted">Leave blank if not applicable</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="employment_tenure" class="form-label">Employment Tenure (Years) *</label>
+                            <input type="number" class="form-control" id="employment_tenure" name="employment_tenure" min="0" step="0.5" required>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="credit_score" class="form-label">Credit Score *</label>
+                            <input type="number" class="form-control" id="credit_score" name="credit_score" min="300" max="850" required>
+                            <small class="text-muted">Score between 300-850</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="password" class="form-label">Password *</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mb-4">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Create Account
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center">
+                    <p class="text-muted">Already have an account?</p>
+                    <a href="{{ url_for('user_login', bank_id=bank.id) }}" class="btn btn-outline-primary">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </a>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="text-center">
+                    <a href="{{ url_for('bank_selection', bank_id=bank.id) }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Bank Selection
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Show/hide employer name based on employment type
+    $('#employment_type').change(function() {
+        const employerField = $('#employer_name').closest('.col-md-6');
+        if ($(this).val() === 'salaried') {
+            employerField.show();
+            $('#employer_name').prop('required', true);
+        } else {
+            employerField.hide();
+            $('#employer_name').prop('required', false);
+        }
+    });
+
+    // Initialize on page load
+    $(document).ready(function() {
+        $('#employment_type').trigger('change');
+    });
+
+    // Form validation
+    $('form').on('submit', function(e) {
+        const monthlyIncome = parseFloat($('#monthly_income').val());
+        const creditScore = parseInt($('#credit_score').val());
+        
+        if (monthlyIncome < 5000) {
+            alert('Monthly income should be at least ₹5,000');
+            e.preventDefault();
+            return;
+        }
+        
+        if (creditScore < 300 || creditScore > 850) {
+            alert('Credit score should be between 300 and 850');
+            e.preventDefault();
+            return;
+        }
+    });
+</script>
+{% endblock %}
